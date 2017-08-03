@@ -10,8 +10,8 @@ public class GpcSocket {
 
     private Socket socket;
 
-    private static final int SERVERPORT = 8080;
-    private static final String SERVER_IP = "160.97.53.150";
+    private static final int SERVERPORT = 8888;
+    private static final String SERVER_IP = "192.168.1.78";
 
     public void run() {
         new Thread(new ClientThread()).start();

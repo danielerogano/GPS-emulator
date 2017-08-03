@@ -19,4 +19,28 @@ public class Line {
 		return "Line [lineCode=" + lineCode + ", lineName=" + lineName + ", lineJourneyNumber=" + lineJourneyNumber
 				+ "]";
 	}
+
+	public int getLineCode() {
+		return lineCode;
+	}
+
+	public void setLineCode(int lineCode) {
+		this.lineCode = lineCode;
+	}
+
+	public String getLineName() {
+		return lineName;
+	}
+
+	public void setLineName(String lineName) {
+		this.lineName = lineName;
+	}
+
+	public int getLineJourneyNumber() {
+		return lineJourneyNumber;
+	}
+
+	public void setLineJourneyNumber(int lineJourneyNumber) {
+		this.lineJourneyNumber = lineJourneyNumber;
+	}
 }
