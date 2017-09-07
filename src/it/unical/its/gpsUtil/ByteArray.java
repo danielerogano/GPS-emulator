@@ -29,7 +29,7 @@ public class ByteArray {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ByteArray(int timestamp, boolean degraded, boolean deadReckoned, boolean notFixed, double lat, double lon, double alt, double heading, double speed, int accuracy, int type, int event, int vehicleJourney) throws IOException {
+	public ByteArray(int timestamp, boolean degraded, boolean deadReckoned, boolean notFixed, double lat, double lon, double alt, float heading, double speed, int accuracy, int type, int event, int vehicleJourney) throws IOException {
 
 		int deg, dea, nf = 0;
 		
@@ -59,8 +59,7 @@ public class ByteArray {
 		this.location = locationComposer(lat, lon, alt);
 		this.trackingInfo = trackingInfoComposer(type, event);
 		
-
-		Arrays.fill(this.heading, (byte)heading);
+		this.heading = ByteBuffer.allocate(4).putFloat((float) heading).array();
 		Arrays.fill(this.speed, (byte)speed);
 		Arrays.fill(this.accuracy, (byte)accuracy);
 		Arrays.fill(this.trackingInfo, (byte)1);
@@ -122,9 +121,20 @@ public class ByteArray {
 	    target.put(parameter);
 	}
 	
+	public static byte[] convertToByteArray(double value, int length) {
+	      byte[] bytes = new byte[length];
+	      ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
+	      buffer.putDouble(value);
+	      return buffer.array();
+	  }
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		log("Test!");
+		ByteArray ba = new ByteArray(1504797708, false, false, false, 39.3265, 16.5567, 12.2, (float)312.1, 34.5, 12, 1, 1, 26523);
+	    
+	    System.out.println(Arrays.toString(ba.heading));
+
+
 	}
 	
 	private static void log(Object aObject){
