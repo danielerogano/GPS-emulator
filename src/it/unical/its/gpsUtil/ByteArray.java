@@ -1,5 +1,7 @@
 package it.unical.its.gpsUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -21,15 +23,11 @@ public class ByteArray {
 	byte[] journeyOrdinal = new byte[2];
 	byte[] parameter = new byte[4];
 	
-	// int[] bits = new int[]{1, 0, 1, 0, 1, 1, 0, 1, 0, 1};
-	// int[] bitsType;
-	// int[] bitsEvent;
-	
 	public ByteArray() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public ByteArray(int timestamp, boolean degraded, boolean deadReckoned, boolean notFixed, double lat, double lon, double alt, float heading, double speed, int accuracy, int type, int event, int vehicleJourney) throws IOException {
+	public ByteArray(long timestamp, boolean degraded, boolean deadReckoned, boolean notFixed, float lat, float lon, float alt, float heading, float speed, int accuracy, int type, int event, int vehicleJourney) throws IOException {
 
 		int deg, dea, nf = 0;
 		
@@ -50,26 +48,34 @@ public class ByteArray {
 			nf = 0;
 			}
 		
+		int[] bitsVersion = new int[]{1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		int[] bitsFlag = new int[]{deg, dea, nf, 0, 0, 0, 0, 0, 0, 0};
+		int[] bitsjourneyOrdinal = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		int[] bitsparameter = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		
-		Arrays.fill(this.version, (byte)1);
-		Arrays.fill(this.timestamp, (byte)timestamp);
+		this.version = byteComposer(bitsVersion);
+		//this.timestamp = ByteBuffer.allocate(8).putLong(timestamp).array();
+		this.timestamp = this.longToBytes(timestamp);
 		
-		this.flags = flagComposer(bitsFlag);
+		this.flags = byteComposer(bitsFlag);
 		this.location = locationComposer(lat, lon, alt);
-		this.trackingInfo = trackingInfoComposer(type, event);
+		
 		
 		this.heading = ByteBuffer.allocate(4).putFloat((float) heading).array();
-		Arrays.fill(this.speed, (byte)speed);
-		Arrays.fill(this.accuracy, (byte)accuracy);
-		Arrays.fill(this.trackingInfo, (byte)1);
-		Arrays.fill(this.vehicleJourney, (byte)vehicleJourney);
-		Arrays.fill(this.journeyOrdinal, (byte)0);
-		Arrays.fill(this.parameter, (byte)0);
+		this.speed = ByteBuffer.allocate(4).putFloat((float) speed).array();
+		this.accuracy = ByteBuffer.allocate(1).put((byte)accuracy).array();
+
+		// this.trackingInfo = trackingInfoComposer(type, event);
+		this.trackingInfo = byteComposer(bitsFlag);
 		
+		this.vehicleJourney = ByteBuffer.allocate(4).putFloat((float) vehicleJourney).array();
+		this.journeyOrdinal = byteComposer(bitsjourneyOrdinal);
+		this.parameter = byteComposer(bitsparameter);
+		
+		this.arrayComposer();
 	}
 	
-	private static byte[]  flagComposer (int[] bits) {
+	private static byte[]  byteComposer (int[] bits) {
 		
 		BitSet bitSet = new BitSet(bits.length);
 	    for (int index = 0; index < bits.length; index++) {
@@ -85,7 +91,7 @@ public class ByteArray {
 	 	return sType.getBytes();
 	}
 	
-	public byte[] locationComposer(double lat, double lon, double alt) throws IOException {
+	public byte[] locationComposer(float lat, float lon, float alt) throws IOException {
 		
 		byte[] loc = new byte[12];
 		
@@ -93,17 +99,22 @@ public class ByteArray {
 		byte[] longitude = new byte[4];
 		byte[] altitude = new byte[4];
 		
-		Arrays.fill(latitude, (byte)lat);
-		Arrays.fill(longitude, (byte)lon);
-		Arrays.fill(altitude, (byte)alt);
+		latitude = ByteBuffer.allocate(4).putFloat((float) lat).array();
+		longitude = ByteBuffer.allocate(4).putFloat((float) lon).array();
+		altitude = ByteBuffer.allocate(4).putFloat((float) alt).array();
 		
-		ByteBuffer target = ByteBuffer.wrap(location);
+		ByteBuffer target = ByteBuffer.wrap(loc);
 	    target.put(latitude);
 	    target.put(longitude);
 	    target.put(altitude);
-	    
 	    return loc;
 	    
+	}
+	
+	public byte[] longToBytes(long x) {
+	    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+	    buffer.putLong(x);
+	    return buffer.array();
 	}
 	
 	public void arrayComposer() throws IOException {
@@ -117,7 +128,7 @@ public class ByteArray {
 	    target.put(accuracy);
 	    target.put(trackingInfo);
 	    target.put(vehicleJourney);
-	    target.put(journeyOrdinal);	 
+	    target.put(journeyOrdinal);
 	    target.put(parameter);
 	}
 	
@@ -128,13 +139,37 @@ public class ByteArray {
 	      return buffer.array();
 	  }
 	
+	/*
+	
 	public static void main(String[] args) throws IOException {
 		log("Test!");
-		ByteArray ba = new ByteArray(1504797708, false, false, false, 39.3265, 16.5567, 12.2, (float)312.1, 34.5, 12, 1, 1, 26523);
+		ByteArray ba = new ByteArray(1504797708, true, false, false, (float)39.3265, (float)16.5567, (float)12.2, (float)312.1, (float)34.5, 12, 1, 1, 26523);
 	    
-	    System.out.println(Arrays.toString(ba.heading));
+	    System.out.println("Version: " + Arrays.toString(ba.version));
+	    System.out.println("Timestamp: " + Arrays.toString(ba.timestamp));
+	    System.out.println("flags: " + Arrays.toString(ba.flags));
+	    System.out.println("location: " + Arrays.toString(ba.location));
+	    System.out.println("heading: " + Arrays.toString(ba.heading));
+	    System.out.println("speed: " + Arrays.toString(ba.speed));
+	    System.out.println("accuracy: " + Arrays.toString(ba.accuracy));
+	    System.out.println("trackingInfo: " + Arrays.toString(ba.trackingInfo));
+	    System.out.println("vehicleJourney: " + Arrays.toString(ba.vehicleJourney));
+	    System.out.println("journeyOrdinal: " + Arrays.toString(ba.journeyOrdinal));
+	    System.out.println("parameter: " + Arrays.toString(ba.parameter));
+	    
+	    ba.arrayComposer();
+	    
+	    System.out.println(Arrays.toString(ba.trackingPacket));
 
+	    writeToFile(ba.trackingPacket);
 
+	}
+	
+	*/
+	private static void writeToFile(byte[] arr ) throws IOException {
+		FileOutputStream fileOuputStream = new FileOutputStream("C:\\Users\\dr\\Desktop\\output.DAT"); 
+        fileOuputStream.write(arr);
+    	fileOuputStream.close();
 	}
 	
 	private static void log(Object aObject){
