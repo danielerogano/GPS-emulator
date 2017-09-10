@@ -4,14 +4,12 @@ package it.unical.its.gpsUtil;
 
 import java.io.*;
 import java.net.*;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.Random;
@@ -104,7 +102,7 @@ public class Parser {
 		//log("List objects: " + stopList.size());	
 		for (StopTime st: stopList) {
 			if (st.isActive()) {
-			log(st.getDurf() + ", " + st.getName() + ", " + st.getLon() + ", " + st.getLat() + ", " + st.getTime());
+			// log(st.getDurf() + ", " + st.getName() + ", " + st.getLon() + ", " + st.getLat() + ", " + st.getTime());
 			
 			packetGenerator(st);
 			
