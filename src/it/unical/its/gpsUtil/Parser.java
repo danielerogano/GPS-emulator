@@ -312,7 +312,6 @@ public class Parser {
         		);
         
 		byteArrays.add(ba);
-		// log(Arrays.toString(ba.timestamp));
 
 	}
   
