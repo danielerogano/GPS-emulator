@@ -1,6 +1,7 @@
 package it.unical.its.gpsUtil;
 
 import java.time.LocalTime;
+import java.util.Random;
 
 public class StopTime {
 
@@ -18,7 +19,20 @@ public class StopTime {
 		this.time = time;
 		this.active = active;
 	}
+	
+	public StopTime() {
+		// Empty object
+	}
 
+	public void clone( StopTime st) {
+		this.durf = st.durf;
+		this.name = st.name;
+		this.lon = st.lon;
+		this.lat = st.lat;
+		this.time = st.time;
+		this.active = st.active;
+	}
+	
 	public int getDurf() {
 		return durf;
 	}
@@ -34,17 +48,25 @@ public class StopTime {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public double getLat() {
+		return lat;
+	}
 
 	public double getLon() {
 		return lon;
 	}
 
-	public void setLon(double lon) {
-		this.lon = lon;
+	public double getRndLat() {
+		return lat + 0.00005;
+	}
+	
+	public double getRndLon() {
+		return lon + 0.00005;
 	}
 
-	public double getLat() {
-		return lat;
+	public void setLon(double lon) {
+		this.lon = lon;
 	}
 
 	public void setLat(double lat) {
